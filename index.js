@@ -1,40 +1,30 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
-
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(cors());
 app.use(express.json());
 
-app.post('/login', async (req, res) => {
+// Rota de teste
+app.get('/', (req, res) => {
+  res.send('Servidor Cryptitys ativo.');
+});
+
+// Endpoint para autenticação (exemplo)
+app.post('/login', (req, res) => {
   const { ra, senha } = req.body;
-  try {
-    const response = await axios.post('https://edusp-api.pjpi.net/api/login', {
-      username: ra,
-      password: senha
-    });
-    res.json(response.data);
-  } catch (error) {
-    res.status(401).json({ error: 'Falha no login' });
+  // Simule autenticação real aqui
+  if (ra && senha) {
+    res.json({ success: true, token: 'simulado-123' });
+  } else {
+    res.status(401).json({ success: false, message: 'Credenciais inválidas' });
   }
 });
 
-app.post('/atividades', async (req, res) => {
-  const { token, alunoId, expired } = req.body;
-
-  try {
-    const response = await axios.get(`https://edusp-api.pjpi.net/api/todo?expired_only=${expired}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    const atividades = response.data.filter(a => a.publication_target.includes(alunoId));
-    res.json(atividades);
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar atividades' });
-  }
-});
-
-app.post('/responder', async (req, res) => {
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+});app.post('/responder', async (req, res) => {
   const { atividadeId, resposta, tempo, token } = req.body;
 
   setTimeout(async () => {
